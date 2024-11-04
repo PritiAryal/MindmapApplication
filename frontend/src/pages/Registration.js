@@ -165,6 +165,7 @@ const RegistrationPage = () => {
                     <svg
                       className="fill-current h-4 w-4 text-red-700"
                       role="button"
+                      onClick={() => setError("")}
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                     >
@@ -184,6 +185,7 @@ const RegistrationPage = () => {
                     <svg
                       className="fill-current h-4 w-4 text-teal-700"
                       role="button"
+                      onClick={() => setSuccessMessage("")}
                       xmlns="http://www.w3.org/2000/svg"
                       viewBox="0 0 20 20"
                     >

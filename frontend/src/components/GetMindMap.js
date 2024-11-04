@@ -17,9 +17,14 @@ import "../MindMap.css";
 import axiosInstance from "../api/axiosConfig.js";
 import CopyLink from "./CopyLink";
 import PasteLink from "./PasteLink";
+import CustomEdge from "./CustomEdge";
 
 const nodeTypes = {
   custom: CustomNode,
+};
+
+const edgeTypes = {
+  custom: CustomEdge,
 };
 
 const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
@@ -35,7 +40,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [isDragging, setIsDragging] = useState(false);
-  const newParentIdRef = useRef(null);
+  // const newParentIdRef = useRef(null);
   const newPositionRef = useRef(null);
   const onConnect = useCallback(
     async (params) => {
@@ -272,6 +277,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
       const draggedNodeElement = event.target;
       const draggedNodeBounds = draggedNodeElement.getBoundingClientRect();
       let newParentId = null;
+      let nodesToUpdate = [];
 
       const isDescendant = (nodeId, potentialDescendantId, nodes) => {
         const node = nodes.find((n) => n.id === nodeId);
@@ -403,6 +409,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
                 data: {
                   ...draggedNode.data,
                   parentId: newParentId,
+                  moveCount: draggedNode.data.moveCount + 1,
                 },
               };
 
@@ -424,13 +431,17 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
                           : newParentId,
                       },
                     };
+                    nodesToUpdate.push(updatedNodes);
+                    return updatedNodes;
                   }
                   return node;
                 });
               };
               updateChildrenPositions(draggedNode.id, newPosition);
             }
-
+            nodesToUpdate.push(
+              updatedNodes.find((n) => n.id === draggedNode.id)
+            );
             return updatedNodes;
           });
 
@@ -440,13 +451,23 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
             existingEdge = eds.find((e) => e.target === draggedNode.id);
 
             if (newParentId) {
-              newEdges.push({
-                id: `e-${newParentId}-${draggedNode.id}`,
-                source: newParentId,
-                target: draggedNode.id,
-              });
+              newEdges.push(
+                createEdge(
+                  `e-${newParentId}-${draggedNode.id}`,
+                  newParentId,
+                  draggedNode.id,
+                  false,
+                  (draggedNode.data.moveCount || 0) + 1
+                )
+              );
             } else if (existingEdge) {
-              newEdges.push(existingEdge);
+              newEdges.push({
+                ...existingEdge,
+                data: {
+                  ...existingEdge.data,
+                  moveCount: (existingEdge.data.moveCount || 0) + 1,
+                },
+              });
             }
 
             resolve();
@@ -456,19 +477,22 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
 
       await updateNodesAndEdges();
 
-      const updatePayload = {
-        x: draggedNode.position.x,
-        y: draggedNode.position.y,
-        ...(newParentId && { parentId: newParentId }),
-      };
+      // updateEdgeStyles();
+      for (const node of nodesToUpdate) {
+        const updatePayload = {
+          x: node.position.x,
+          y: node.position.y,
+          parentId: node.data.parentId,
+        };
 
-      console.log("Update payload:", updatePayload);
+        console.log(`Updating payload node ${node.id}:`, updatePayload);
 
-      try {
-        await axiosInstance.put(`/node/${draggedNode.id}`, updatePayload);
-        console.log("Node parent and position updated successfully");
-      } catch (error) {
-        console.error("Error updating node:", error);
+        try {
+          await axiosInstance.put(`/node/${node.id}`, updatePayload);
+          console.log(`Node ${node.id} updated successfully`);
+        } catch (error) {
+          console.error(`Error updating node ${node.id}:`, error);
+        }
       }
 
       try {
@@ -485,9 +509,10 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
         console.error("Error updating edge:", error);
       }
 
-      console.log(`Node being dragged: ${draggedNode.id}`);
+      // console.log(`Node being dragged: ${draggedNode.id}`);
       console.log("New Parent ID:", newParentId);
-      console.log("Update Payload:", updatePayload);
+      // console.log("Update Payload:", updatePayload);
+      console.log("Nodes updated:", nodesToUpdate);
       console.log("State after updating:", updatedNodes);
     },
     [setNodes, setEdges]
@@ -620,6 +645,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
             newNodeData
           );
           newNode.data.parentId = node.parentId;
+          newNode.data.moveCount = node.moveCount;
           return newNode;
         });
 
@@ -638,14 +664,26 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
         const allEdges = nodesData.flatMap((node) =>
           edgesData
             .filter((edge) => edge.id.startsWith(`e-${node.id}-`))
-            .map((edge) =>
-              createEdge(
+            .map((edge) => {
+              const sourceNode = nodesData.find((n) => n.id === node.id);
+              const targetNode = nodesData.find(
+                (n) => n.id === extractTargetId(edge.id, node.id)
+              );
+
+              const moveCount = targetNode?.moveCount || 0; //(sourceNode?.moveCount || 0) +
+
+              console.log(
+                `Edge ${edge.id}: sourceNode.moveCount = ${sourceNode?.moveCount}, targetNode.moveCount = ${targetNode?.moveCount}, final moveCount = ${moveCount}`
+              );
+
+              return createEdge(
                 edge.id,
                 node.id,
                 extractTargetId(edge.id, node.id),
-                edge.hidden
-              )
-            )
+                edge.hidden,
+                moveCount
+              );
+            })
         );
 
         console.log(
@@ -682,6 +720,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
         proOptions={proOptions}
         nodes={nodes}
         edges={edges}
+        edgeTypes={edgeTypes}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
@@ -700,7 +739,7 @@ const GetMindMap = ({ mindMapId, onNodeClick, current }) => {
         <CopyLink nodeId={clickedNodeId} mindMapId={mindMapId} />
       )}
       {current === "linkSearch" && clickedNodeId && (
-        <PasteLink nodeId={clickedNodeId} mindMapId={mindMapId} />
+        <PasteLink node_Id={clickedNodeId} mindMapId={mindMapId} />
       )}
     </div>
   );

@@ -1,8 +1,8 @@
 package com.example.MindmapBackend.Service;
 
 
-import com.example.MindmapBackend.Repository.ApplicationuserRepository;
 import com.example.MindmapBackend.Domain.Applicationuser;
+import com.example.MindmapBackend.Repository.ApplicationuserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

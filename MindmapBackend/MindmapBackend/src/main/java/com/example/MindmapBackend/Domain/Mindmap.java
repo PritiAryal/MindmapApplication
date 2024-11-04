@@ -23,6 +23,17 @@ public class Mindmap {
     @JoinColumn(name = "applicationuser_id", nullable = false)
     private Applicationuser applicationuser;
 
-    @OneToMany(mappedBy = "mindmap", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @OneToMany(mappedBy = "mindmap", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<Node> nodes = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "mindmap_node", // Join table for the many-to-many relation
+            joinColumns = @JoinColumn(name = "mindmap_id"),
+            inverseJoinColumns = @JoinColumn(name = "node_id")
+    )
     private List<Node> nodes = new ArrayList<>();
+
+//    @OneToMany(mappedBy = "mindmap", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<NodeInstance> nodeInstances = new ArrayList<>();
 }

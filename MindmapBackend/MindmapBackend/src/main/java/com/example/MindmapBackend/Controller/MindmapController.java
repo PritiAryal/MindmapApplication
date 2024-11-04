@@ -1,9 +1,8 @@
 package com.example.MindmapBackend.Controller;
 
 
-import com.example.MindmapBackend.Domain.Applicationuser;
 import com.example.MindmapBackend.Domain.Mindmap;
-import com.example.MindmapBackend.Service.ApplicationuserService;
+import com.example.MindmapBackend.Service.GenerateMindmapService;
 import com.example.MindmapBackend.Service.MindmapService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,7 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+
 
 @RestController
 @CrossOrigin
@@ -20,6 +20,42 @@ public class MindmapController {
 
     @Autowired
     private MindmapService mindmapService;
+
+
+    @Autowired
+    private GenerateMindmapService generateMindmapService;
+
+
+
+    @PostMapping("/generate/{userId}")
+    public ResponseEntity<Void> generateMindmap(
+            @PathVariable Integer userId,
+            @RequestBody Map<String, String> requestBody) {
+        String keyword = requestBody.get("keyword");
+
+        try {
+            List<Mindmap> existingMindmaps = mindmapService.getMindmapsByUser(userId);
+
+            // Check if any existing mindmap titles contain the keyword
+            boolean duplicateFound = existingMindmaps.stream()
+                    .anyMatch(mindmap -> mindmap.getTitle().equalsIgnoreCase(keyword));
+
+            if (duplicateFound) {
+                System.out.println("Duplicate mindmap found for keyword: " + keyword);
+                return ResponseEntity.status(409).build();
+            }
+
+            // Call Python script to generate mindmap data
+            String mindmapData = generateMindmapService.generateMindmapData(userId, keyword);
+
+            System.out.println("Mindmap data generated: " + mindmapData);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
 
 
     @PostMapping("/user/{userId}")

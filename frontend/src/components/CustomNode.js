@@ -93,6 +93,7 @@ const CustomNode = ({ data, id }) => {
         newNodeData
       );
       newNode.data.parentId = id;
+      newNode.data.moveCount = 0;
       data.onAddNode(newNode, id);
       console.log(newNode.data.mindMapId);
       try {
@@ -154,11 +155,6 @@ const CustomNode = ({ data, id }) => {
   const closeVideoModal = useCallback(() => {
     setShowVideoModal(false);
   }, []);
-  // const handleNodeClick = useCallback((e) => {
-  //   if (!nodeRef.current.contains(e.target)) {
-  //     setShowDropdown(false);
-  //   }
-  // }, []);
 
   const showPlusButton = data.children.length === 0 || data.isExpanded;
 

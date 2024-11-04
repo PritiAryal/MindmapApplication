@@ -18,11 +18,29 @@ export const createNodeData = (
   mindMapId,
 });
 
-export const createEdge = (id, source, target, hidden = false) => ({
+// export const createEdge = (id, source, target, hidden = false, style = {}) => ({
+//   id,
+//   source,
+//   target,
+//   hidden, // hidden is passed directly
+//   style,
+// });
+
+export const createEdge = (
   id,
   source,
   target,
-  hidden, // hidden is passed directly
+  hidden = false,
+  moveCount = 0,
+  style = {}
+) => ({
+  id,
+  source,
+  target,
+  hidden,
+  type: "custom", // Use the custom edge type
+  data: { moveCount }, // Include moveCount in the edge data
+  style,
 });
 
 export const createNode = (id, label, position, data) => ({

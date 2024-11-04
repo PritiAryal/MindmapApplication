@@ -1,7 +1,6 @@
 package com.example.MindmapBackend.Service;
 
 
-import com.example.MindmapBackend.Domain.Applicationuser;
 import com.example.MindmapBackend.Domain.Mindmap;
 import com.example.MindmapBackend.Repository.ApplicationuserRepository;
 import com.example.MindmapBackend.Repository.MindmapRepository;
@@ -20,6 +19,13 @@ public class MindmapService {
 
     @Autowired
     private ApplicationuserRepository applicationuserRepository;
+
+//    public Mindmap findById(Integer id) {
+//        return mindmapRepository.findById(id).orElse(null);
+//    }
+public void saveMindmap(Mindmap mindmap) {
+    mindmapRepository.save(mindmap);
+}
 
     // Create a new Mindmap for a specific user
     @Transactional

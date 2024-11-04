@@ -66,7 +66,7 @@ const Video = ({ videos, node }) => {
             return (
               <div
                 key={video.id}
-                className="min-w-[20vw] bg-white p-2 rounded-lg shadow-md cursor-pointer"
+                className="min-w-[20vw] max-w-[22vw] bg-white p-2 rounded-lg shadow-md cursor-pointer"
                 onClick={() => openModal(video)}
               >
                 {videoId ? (
@@ -80,7 +80,8 @@ const Video = ({ videos, node }) => {
                     No Thumbnail
                   </div>
                 )}
-                <p className="text-center text-sm mt-2 truncate">
+                <p className="text-center text-sm mt-2">
+                  {/*//truncate*/}
                   {video.title}
                 </p>
               </div>

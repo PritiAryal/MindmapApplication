@@ -1,9 +1,10 @@
 package com.example.MindmapBackend.Service;
 
 
+import com.example.MindmapBackend.Domain.Applicationuser;
+import com.example.MindmapBackend.Domain.Login;
 import com.example.MindmapBackend.Repository.AccountRepository;
 import com.example.MindmapBackend.Repository.ApplicationuserRepository;
-import com.example.MindmapBackend.Domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

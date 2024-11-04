@@ -1,10 +1,10 @@
 package com.example.MindmapBackend.Controller;
 
+import com.example.MindmapBackend.Domain.Applicationuser;
+import com.example.MindmapBackend.Domain.Login;
 import com.example.MindmapBackend.Repository.ApplicationuserRepository;
 import com.example.MindmapBackend.Service.ApplicationuserService;
 import com.example.MindmapBackend.Service.SecurityService;
-import com.example.MindmapBackend.Domain.Applicationuser;
-import com.example.MindmapBackend.Domain.Login;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

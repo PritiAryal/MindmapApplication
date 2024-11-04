@@ -22,9 +22,8 @@ const LinkSearch = ({ searchedMindMapId, onNodeClick }) => {
         setMindmapTitle(response.data.title);
         console.log("response:", response.data.nodes);
 
-        // Automatically select and show the first node if available
         if (response.data.nodes.length > 0) {
-          onNodeClick(response.data.nodes[0]); // Select the first node
+          onNodeClick(response.data.nodes[0]);
         }
       } else {
         setError("Unexpected response format");

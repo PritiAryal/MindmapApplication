@@ -1,14 +1,11 @@
 package com.example.MindmapBackend.Service;
 
-import com.example.MindmapBackend.Domain.Mindmap;
 import com.example.MindmapBackend.Domain.Video;
 import com.example.MindmapBackend.Repository.NodeRepository;
 import com.example.MindmapBackend.Repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.repository.support.SimpleElasticsearchRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 

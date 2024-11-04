@@ -7,8 +7,7 @@ const CopyLink = ({ nodeId, mindMapId }) => {
 
   const copyLink = async () => {
     try {
-      //I have not completed backend for this part yet.
-      const response = await axiosInstance.get(`/api/nodes/${nodeId}/link`);
+      const response = await axiosInstance.get(`/${nodeId}/link`);
       const nodeLink = response.data;
 
       navigator.clipboard.writeText(nodeLink);
